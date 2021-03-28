@@ -41,7 +41,7 @@ pip3 install -r requirements.txt (Install the requirements preferrably in Virtua
 Modify app.py File - Remove the existing JSON file for service account from Firestore and add yours:
 
 ```bash
-cred = credentials.Certificate('grofers-db-firebase-adminsdk-48vep-b863148ec9.json')
+cred = credentials.Certificate('file.json')
 ```
 
 ## Usage
