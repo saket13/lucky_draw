@@ -55,6 +55,30 @@ def get_or_post_event_date():
 
 
 
+# 3. To participate in an Event using generated ID 
+# POST : Do a POST request in the raw JSON format {"date" : "25032021", "ID" : "14"
+# Here, arrayUnion has been done in the document(namd datewise) in order to have a list of participating users per event
+@app.route('/participate', methods=['POST'])
+def participate_in_event():
+    try:
+        participants_ref = db.collection(u'participants')
+        event_date = request.json['date']
+        ID = request.json['ID']
+        participants_doc = participants_ref.document(event_date)
+        doc_exists = participants_doc.get()
+        if doc_exists.exists:
+            participants_doc.update({u'IDs': firestore.ArrayUnion([ID])})
+        else:
+            participants_doc.set({u'IDs': firestore.ArrayUnion([ID])})
+        return jsonify({"Participated in Event successfully": True}), 200
+
+    except Exception as e:
+        return f"An Error Occured: {e}"
+
+
+
+
+
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
     app.run(threaded=True, port=5000)
