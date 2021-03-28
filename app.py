@@ -78,6 +78,43 @@ def participate_in_event():
 
 
 
+# 4. To find/compute the winner of a particular event randomly
+# POST : Do a POST request in the raw JSON format {"date" : "25032021"}
+# Here, random() module has been used to choose a random winner for an asked event
+@app.route('/compute_winner', methods=['GET','POST'])
+def compute_current_event_winner():
+    try:
+        participants_ref = db.collection(u'participants')
+        event_date = request.json['date']
+        participants = participants_ref.document(event_date).get()
+        participants_dict = participants.to_dict()
+        return jsonify(random.choice(participants_dict['IDs'])), 200
+        
+
+    except Exception as e:
+        return f"An Error Occured: {e}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
