@@ -56,7 +56,7 @@ def get_or_post_event_date():
 
 
 # 3. To participate in an Event using generated ID 
-# POST : Do a POST request in the raw JSON format {"date" : "25032021", "ID" : "14"
+# POST : Do a POST request in the raw JSON format {"date" : "25032021", "ID" : "14"}
 # Here, arrayUnion has been done in the document(namd datewise) in order to have a list of participating users per event
 @app.route('/participate', methods=['POST'])
 def participate_in_event():
@@ -80,7 +80,7 @@ def participate_in_event():
 
 # 4. To find/compute the winner of a particular event randomly
 # POST : Do a POST request in the raw JSON format {"date" : "25032021"}
-# Here, random() module has been used to choose a random winner for an asked event
+# Here, random() module has been used to choose a random winner for the date through POST request
 @app.route('/compute_winner', methods=['GET','POST'])
 def compute_current_event_winner():
     try:
@@ -97,8 +97,25 @@ def compute_current_event_winner():
 
 
 
-
-
+# 5. To post a winner or get last 7 winners 
+# POST : Do a POST request in the raw JSON format {"date" : "25032021"}
+# GET : Find the list of last 7 winners (Week) in descending order
+# Here, POST request is to add a winner for a given event using JSOn format {"date" : "25032021", "Winner" : "14"}
+# POST request can be called out after computing winner by passing through parameters
+@app.route('/winners', methods=['GET', 'POST'])
+def get_winners():
+    try:
+        winners_ref = db.collection(u'winners')
+        if request.method == 'POST':
+            event_date = request.json['date']
+            winners_ref.document(event_date).set(request.json)
+            return jsonify({"Winner added successfully": True}), 200
+        
+        else:
+            last_7_winners = [winner.to_dict() for winner in winners_ref.order_by(u'date',direction=firestore.Query.DESCENDING).limit(7).stream()]
+            return jsonify(last_7_winners), 200
+    except Exception as e:
+        return f"An Error Occured: {e}"
 
 
 
